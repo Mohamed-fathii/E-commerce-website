@@ -6,6 +6,8 @@ $color-gray: #999;
 $color-red: red;
 
 @import "./components/navbar/navbar.scss";
+@import "./components/product-card/product-card.scss";
+@import "./styles/store.scss";
 
 * {
   padding: 0;
@@ -20,6 +22,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: $color-scondary;
 }
 
 a {
