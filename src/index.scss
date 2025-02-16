@@ -8,6 +8,8 @@ $color-red: red;
 @import "./components/navbar/navbar.scss";
 @import "./components/product-card/product-card.scss";
 @import "./styles/store.scss";
+@import "./styles/form.scss";
+@import "./styles/authencitate.scss";
 
 * {
   padding: 0;
@@ -44,7 +46,7 @@ button {
   padding: 0 20px;
   outline: 0;
   height: 40px;
-  transition: all 0.5 ease-in-out;
+  transition: all 0.3s ease-in-out;
   &:hover {
     opacity: 1;
   }

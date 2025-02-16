@@ -3,8 +3,8 @@ import { products } from "utils/products";
 function Store() {
   return (
     <div className="store">
-      {products.map((product) => {
-        return <ProductCard product={product} />;
+      {products.map((product, index) => {
+        return <ProductCard product={product} key={index} />;
       })}
     </div>
   );
