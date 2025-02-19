@@ -1,0 +1,28 @@
+.cart-card {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0px 2px 72px 2px rgb(110 108 208 /18%);
+  &__image {
+    width: 200px;
+  }
+  &__title {
+    font-weight: bold;
+  }
+  &__description {
+    max-width: 200px;
+  }
+  &__icon {
+    font-size: 25px;
+    cursor: pointer;
+  }
+  @media screen and (max-width: 880px) {
+    flex-direction: column;
+    gap: 30px;
+    font-size: 20px;
+  }
+}

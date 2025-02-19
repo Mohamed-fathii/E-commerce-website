@@ -10,8 +10,13 @@ import {
   collection,
   where,
   getDocs,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  onSnapshot,
 } from "firebase/firestore";
 import { auth, database } from "./firebaseConfig";
+import { error } from "ajv/dist/vocabularies/applicator/dependencies";
 
 export function getFrontendErrorMessage(errorCode) {
   switch (errorCode) {
@@ -33,6 +38,8 @@ export function getFrontendErrorMessage(errorCode) {
       return "This operation is currently not allowed. Please try again later.";
     case "Firebase: Error (auth/too-many-requests).":
       return "Too many requests, please try again in some minutes";
+    case "Firebase: Error (auth/wrong-password).":
+      return "Wrong password please try again";
     default:
       return "An error occurred. Please try again.";
   }
@@ -85,4 +92,40 @@ export const fetchUserData = async (user) => {
   } catch (error) {
     return { success: false, error: error.message };
   }
+};
+
+export const updateArrayData = async (product) => {
+  const user = auth.currentUser;
+  const docRef = doc(database, "users", user.uid);
+  try {
+    await updateDoc(docRef, {
+      cartProducts: arrayUnion(product),
+    });
+    return { success: true };
+  } catch {
+    return { success: false, error: error.message };
+  }
+};
+
+export const removeArrayData = async (product) => {
+  const user = auth.currentUser;
+  const docRef = doc(database, "users", user.uid);
+  try {
+    await updateDoc(docRef, {
+      cartProducts: arrayRemove(product),
+    });
+    return { success: true };
+  } catch {
+    return { success: false, error: error.message };
+  }
+};
+
+export const setupDBListener = (user, callback) => {
+  const docRef = doc(database, "users", user.uid);
+  return onSnapshot(docRef, (doc) => {
+    if (doc.exists()) {
+      const data = doc.data();
+      callback(data["cartProducts"]);
+    }
+  });
 };

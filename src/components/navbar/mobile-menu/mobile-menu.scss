@@ -31,6 +31,16 @@
         font-weight: 600;
         opacity: 1;
       }
+      &--cart-count {
+        padding: 0 5px 0 0;
+      }
+    }
+    &__cart-count {
+      background-color: $color-primary;
+      color: white;
+      border-radius: 50%;
+      padding: 5px 10px;
+      margin: 0 0 0 10px;
     }
   }
 }

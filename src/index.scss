@@ -10,7 +10,8 @@ $color-red: red;
 @import "./styles/store.scss";
 @import "./styles/form.scss";
 @import "./styles/authencitate.scss";
-
+@import "./components/cart-card/cart-card.scss";
+@import "./styles/cart.scss";
 * {
   padding: 0;
   margin: 0;

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { mainContext } from "utils/context";
 import { useNavigate } from "react-router-dom";
+import { updateArrayData } from "utils/firebaseFunction";
 function ProductCard({ product }) {
   const { name, description, price, wasPrice, imageURL } = product;
   const navigate = useNavigate();
@@ -8,7 +9,9 @@ function ProductCard({ product }) {
   const redirectToLogin = () => {
     navigate("/authenticate");
   };
-  const addToCart = () => {};
+  const addToCart = async () => {
+    await updateArrayData(product);
+  };
   return (
     <div className="product-card">
       <div className="product-card__content">
