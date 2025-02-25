@@ -1,46 +1,43 @@
 .mobile-menu {
   width: 100%;
+  background-color: white;
   height: 100%;
-  background-color: $color-white;
   overflow-y: scroll;
 
   &__content {
     max-width: 640px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    margin: 0 auto;
     padding: 20px 50px;
 
-    &__btn {
-      margin: 15px auto;
-      width: 90px;
-    }
-
-    &__item {
-      display: flex;
+    &--cart {
+      flex-direction: row;
       align-items: center;
-      padding: 16px 0;
-      font-size: 16px;
-      opacity: 0.8;
-      cursor: pointer;
-      justify-content: center;
-      &:hover {
-        opacity: 1;
-      }
-      &--selected {
-        font-weight: 600;
-        opacity: 1;
-      }
-      &--cart-count {
-        padding: 0 5px 0 0;
-      }
     }
     &__cart-count {
+      border-radius: 50%;
       background-color: $color-primary;
       color: white;
-      border-radius: 50%;
       padding: 5px 10px;
-      margin: 0 0 0 10px;
+      margin-left: 10px;
+    }
+    &__item {
+      display: flex;
+      font-size: 18px;
+      align-items: center;
+      padding: 18px 0;
+      opacity: 0.8;
+      justify-content: center;
+
+      &--selected {
+        opacity: 1;
+        font-weight: 600;
+      }
+    }
+    & button {
+      max-width: 100px;
+      margin: 30px auto;
     }
   }
 }

@@ -1,41 +1,53 @@
 import { useContext } from "react";
-import { mainContext } from "utils/context";
+import { MainContext } from "utils/context";
 import { useNavigate } from "react-router-dom";
-import { updateArrayData } from "utils/firebaseFunction";
+import { deleteProduct, updateArrayData } from "utils/firebaseFunction";
+import { AiFillDelete } from "react-icons/ai";
 function ProductCard({ product }) {
-  const { name, description, price, wasPrice, imageURL } = product;
+  const { id, imageURL, title, wasPrice, description, price } = product;
+  const { user, isAdmin } = useContext(MainContext);
   const navigate = useNavigate();
-  const { user } = useContext(mainContext);
+  const addProduct = async () => {
+    await updateArrayData(product);
+  };
   const redirectToLogin = () => {
     navigate("/authenticate");
   };
-  const addToCart = async () => {
-    await updateArrayData(product);
+
+  const handleDelete = async () => {
+    await deleteProduct(id);
   };
   return (
     <div className="product-card">
       <div className="product-card__content">
         <img
           className="product-card__content__image"
+          alt={title}
           src={imageURL}
-          alt={name}
         ></img>
-        <span className="product-card__content__title">{name}</span>
+        <span className="product-card__content__title"> {title}</span>
         <div className="product-card__content__price">
-          {price}
-          <span className="product-card__content__price__slash">
-            {wasPrice}
-          </span>
+          {price}{" "}
+          {wasPrice && (
+            <span className="product-card__content__price__slash">
+              {wasPrice}
+            </span>
+          )}
         </div>
-        <span className="product-card__content__description">
+        <span className={`${!isAdmin && "product-card__content__description"}`}>
           {description}
         </span>
+        {isAdmin && (
+          <AiFillDelete
+            className="product-card__content__remove"
+            onClick={handleDelete}
+          />
+        )}
       </div>
       <button
-        onClick={user ? addToCart : redirectToLogin}
-        className="product-card__btn "
+        className="product-card__btn"
+        onClick={user ? addProduct : redirectToLogin}
       >
-        {" "}
         Add to cart
       </button>
     </div>

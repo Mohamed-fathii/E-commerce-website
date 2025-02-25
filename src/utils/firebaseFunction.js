@@ -1,22 +1,28 @@
 import {
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 import {
-  setDoc,
   doc,
+  setDoc,
   query,
   collection,
   where,
   getDocs,
   updateDoc,
   arrayUnion,
-  arrayRemove,
   onSnapshot,
+  serverTimestamp,
+  arrayRemove,
+  deleteDoc,
 } from "firebase/firestore";
-import { auth, database } from "./firebaseConfig";
-import { error } from "ajv/dist/vocabularies/applicator/dependencies";
+import { database, storage } from "./firebaseConfig";
+import { v4 as uuidv4 } from "uuid";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+const auth = getAuth();
 
 export function getFrontendErrorMessage(errorCode) {
   switch (errorCode) {
@@ -38,8 +44,6 @@ export function getFrontendErrorMessage(errorCode) {
       return "This operation is currently not allowed. Please try again later.";
     case "Firebase: Error (auth/too-many-requests).":
       return "Too many requests, please try again in some minutes";
-    case "Firebase: Error (auth/wrong-password).":
-      return "Wrong password please try again";
     default:
       return "An error occurred. Please try again.";
   }
@@ -53,27 +57,30 @@ export const registerUser = async (username, email, password) => {
     await setDoc(doc(database, "users", user.uid), {
       username: username,
       cartProducts: [],
+      isAdmin: false,
     });
-    return { succes: true };
+
+    return { success: true }; // Indicate success
   } catch (error) {
-    return { succes: false, error: error.message };
+    return { success: false, error: error.message }; // Indicate failure
   }
 };
 
 export const signInUser = async (email, password) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    return { succes: true };
+    return { success: true };
   } catch (error) {
-    return { succes: false, error: error.message };
+    return { success: false, error: error.message };
   }
 };
+
 export const signOutUser = async () => {
   try {
     await signOut(auth);
-    return { succes: true };
+    return { success: true };
   } catch (error) {
-    return { succes: false, error: error.message };
+    return { success: false, error: error.message };
   }
 };
 
@@ -83,7 +90,6 @@ export const fetchUserData = async (user) => {
       collection(database, "users"),
       where("__name__", "==", user?.uid)
     );
-
     const doc = await getDocs(q);
 
     const data = doc.docs[0].data();
@@ -96,31 +102,37 @@ export const fetchUserData = async (user) => {
 
 export const updateArrayData = async (product) => {
   const user = auth.currentUser;
+
   const docRef = doc(database, "users", user.uid);
+
   try {
     await updateDoc(docRef, {
       cartProducts: arrayUnion(product),
     });
+
     return { success: true };
-  } catch {
+  } catch (error) {
     return { success: false, error: error.message };
   }
 };
 
-export const removeArrayData = async (product) => {
+export const deleteArrayData = async (product) => {
   const user = auth.currentUser;
+
   const docRef = doc(database, "users", user.uid);
+
   try {
     await updateDoc(docRef, {
       cartProducts: arrayRemove(product),
     });
+
     return { success: true };
-  } catch {
+  } catch (error) {
     return { success: false, error: error.message };
   }
 };
 
-export const setupDBListener = (user, callback) => {
+export const setupDBListener = async (user, callback) => {
   const docRef = doc(database, "users", user.uid);
   return onSnapshot(docRef, (doc) => {
     if (doc.exists()) {
@@ -128,4 +140,55 @@ export const setupDBListener = (user, callback) => {
       callback(data["cartProducts"]);
     }
   });
+};
+
+export const handleImageChange = async (event) => {
+  const imageFile = event.target.files[0];
+  const storageRef = ref(storage, "images/" + imageFile.name);
+
+  return uploadBytes(storageRef, imageFile).then((snapshot) => {
+    return getDownloadURL(snapshot.ref);
+  });
+};
+
+export const addProduct = async (product) => {
+  try {
+    const id = uuidv4();
+    const productData = {
+      ...product,
+      id: id,
+      createdAt: serverTimestamp(),
+    };
+
+    const productRef = doc(database, "products", id);
+    await setDoc(productRef, productData);
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+export const fetchProducts = async () => {
+  try {
+    const productsRef = collection(database, "products");
+    const querySnapshot = await getDocs(productsRef);
+
+    const data = querySnapshot.docs.map((doc) => doc.data());
+
+    return { success: true, data: data };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+export const deleteProduct = async (productId) => {
+  try {
+    const productRef = doc(database, "products", productId);
+    await deleteDoc(productRef);
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 };

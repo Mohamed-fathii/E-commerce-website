@@ -1,22 +1,31 @@
 import ProductCard from "components/product-card/product-card";
-import { products } from "utils/products";
 import { useContext } from "react";
-import { mainContext } from "utils/context";
+import { MainContext } from "utils/context";
+
 function Store() {
-  const { user, loading, filterdProducts } = useContext(mainContext);
+  const { user, loading, filteredProducts, products } = useContext(MainContext);
+
   return loading ? (
     <div className="cart__message">Loading...</div>
-  ) : user ? (
+  ) : !user ? (
     <div className="store">
-      {filterdProducts.map((product, index) => {
-        return <ProductCard product={product} key={index} />;
-      })}
+      {!products || products.length === 0 ? (
+        <div className="cart__message">No products are found</div>
+      ) : (
+        products.map((product, i) => {
+          return <ProductCard key={i} product={product} />;
+        })
+      )}
     </div>
   ) : (
     <div className="store">
-      {products.map((product, index) => {
-        return <ProductCard product={product} key={index} />;
-      })}
+      {!filteredProducts || filteredProducts.length === 0 ? (
+        <div className="cart__message">No products are found</div>
+      ) : (
+        filteredProducts.map((product, i) => {
+          return <ProductCard key={i} product={product} />;
+        })
+      )}
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import CartCard from "components/cart-card/cart-card";
+import Swal from "sweetalert2";
 
 import { useContext } from "react";
-import { mainContext } from "utils/context";
+import { MainContext } from "utils/context";
 function Cart() {
-  const { user, username, loading, cartProducts } = useContext(mainContext);
+  const { user, username, loading, cartProducts } = useContext(MainContext);
   const calculateTotalPrice = () => {
     if (cartProducts) {
       let totalPrice = 0;
@@ -14,6 +15,17 @@ function Cart() {
     } else {
       return 0;
     }
+  };
+
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+
+    Swal.fire({
+      title: "Notice",
+      text: "We are still working on the payment methods.",
+      icon: "info",
+      confirmButtonText: "OK",
+    });
   };
   return loading ? (
     <div className="cart__message">Loading...</div>
@@ -37,7 +49,9 @@ function Cart() {
         <h2>Username: {username}</h2>
         <h2>total: ${calculateTotalPrice()}</h2>
         {calculateTotalPrice() !== 0 && (
-          <button className="primary">Pay</button>
+          <button className="primary" onClick={handleAddProduct}>
+            Pay
+          </button>
         )}
       </div>
     </div>

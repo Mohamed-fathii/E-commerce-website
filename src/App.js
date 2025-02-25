@@ -2,54 +2,91 @@ import "./App.scss";
 import Navbar from "components/navbar/navbar";
 import Store from "pages/store";
 import Cart from "pages/cart";
+import Admin from "pages/admin";
 import Authenticate from "pages/authenticate";
-import { data, Route, Routes } from "react-router-dom";
-import { mainContext } from "utils/context";
+import ProtectedRoute from "pages/ProtectedAdminRoute ";
+import { Route, Routes } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "utils/firebaseConfig";
 import { useEffect, useState } from "react";
-import { fetchUserData, setupDBListener } from "utils/firebaseFunction";
-import { products } from "utils/products";
+import {
+  fetchUserData,
+  setupDBListener,
+  fetchProducts,
+} from "utils/firebaseFunction";
+import { MainContext } from "utils/context";
+
 function App() {
   const [user, loading] = useAuthState(auth);
+  const [username, setUsername] = useState();
   const [cartProducts, setCartProducts] = useState();
-  const [username, setUserName] = useState();
-  const [filterdProducts, setFilterdProducts] = useState([]);
+  const [isAdmin, setIsAdmin] = useState();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const fetchProductsFromDB = async () => {
+    const res1 = await fetchProducts();
+    if (res1.success) {
+      setProducts(res1.data);
+    }
+  };
+  const fetchData = async () => {
+    fetchProductsFromDB();
+    if (user) {
+      const res2 = await fetchUserData(user);
+      if (res2.success) {
+        setUsername(res2.data.username);
+        setCartProducts(res2.data.cartProducts);
+        setIsAdmin(res2.data.isAdmin);
+      }
+    }
+  };
+
   useEffect(() => {
-    user && fetchUesr();
+    fetchData();
   }, [user]);
 
   useEffect(() => {
-    if (!loading && user) {
+    fetchProductsFromDB();
+    if (!loading && user && products) {
       setupDBListener(user, (data) => {
-        const updateProducts = products.filter((product) => {
-          return !data.some((cartProducts) => cartProducts.id === product.id);
+        const updatedProducts = products.filter((product) => {
+          return !data.some((cartProduct) => cartProduct.id === product.id);
         });
-        setFilterdProducts(updateProducts);
+        setFilteredProducts(updatedProducts);
         setCartProducts(data);
       });
+    } else {
     }
-  }, [user, loading]);
-
-  const fetchUesr = async () => {
-    const res = await fetchUserData(user);
-    if (res.success) {
-      setUserName(res.data.username);
-      setCartProducts(res.data.cartProducts);
-    }
-  };
+  }, [loading, user, products]);
   return (
     <>
-      <mainContext.Provider
-        value={{ user, loading, username, cartProducts, filterdProducts }}
+      <MainContext.Provider
+        value={{
+          user,
+          loading,
+          username,
+          cartProducts,
+          filteredProducts,
+          isAdmin,
+          products,
+        }}
       >
         <Navbar />
         <Routes>
           <Route path="/" element={<Store />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/authenticate" element={<Authenticate />} />
+          <Route
+            path="/add-products"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      </mainContext.Provider>
+      </MainContext.Provider>
     </>
   );
 }

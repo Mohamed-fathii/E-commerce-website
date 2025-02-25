@@ -27,7 +27,11 @@ function RegisterForm() {
       inputs.password
     );
     if (res.succes) {
-      navigate("/");
+      if (res.role === "user") {
+        navigate("/");
+      } else if (res.role === "admin") {
+        navigate("/admin");
+      }
     } else {
       setError(getFrontendErrorMessage(res.error));
     }

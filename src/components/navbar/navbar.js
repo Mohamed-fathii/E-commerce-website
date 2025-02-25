@@ -5,6 +5,7 @@ import DesktopMenu from "./desktop-menu/desktop-menu";
 import { AiOutlineClose } from "react-icons/ai";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState, useEffect } from "react";
+
 function Navbar() {
   const { width } = useWindowSize();
   const [isMenuOpened, setIsMenuOpened] = useState(false);

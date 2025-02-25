@@ -1,13 +1,16 @@
+@import "../navbar/mobile-menu/mobile-menu.scss";
+
 .navbar {
-  min-height: 80px;
+  min-height: 60px;
   width: 100%;
   display: flex;
   justify-content: space-between;
-  background-color: $color-white;
   overflow: hidden;
+  background-color: white;
   padding: 20px 30px;
   align-items: center;
   border-bottom: 2px solid hsla(0, 0%, 52.2%, 0.1);
+
   &__left-side {
     &__logo {
       &__text {
@@ -18,26 +21,19 @@
       }
     }
   }
+
   &__right-side {
     display: flex;
-    &__btn {
-      margin-left: 15px;
-    }
-    &__icon {
-      font-size: 24px;
-    }
 
     &__item {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 20px;
-      opacity: 0.65;
+      padding: 0px 8px 3px 8px;
+      opacity: 0.8;
+
       cursor: pointer;
-      transition: 0.3s all ease-in-out;
-      &:hover {
-        opacity: 1;
-      }
+
       &--cart-count {
         padding: 0 10px 0 0;
       }
@@ -46,11 +42,20 @@
         font-weight: 600;
       }
     }
+    &__icon {
+      font-size: 25px;
+    }
+    &__btn {
+      margin: 10px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
     &__cart-count {
       border-radius: 50%;
       background-color: $color-primary;
       color: white;
-      padding: 4px 10px 5px 9px;
+      padding: 5px 10px;
     }
   }
 }
