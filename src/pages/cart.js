@@ -25,6 +25,8 @@ function Cart() {
       text: "We are still working on the payment methods.",
       icon: "info",
       confirmButtonText: "OK",
+      confirmButtonColor: "#3b4142",
+      iconColor: "#3b4142",
     });
   };
   return loading ? (
